@@ -1,0 +1,60 @@
+
+services:
+  # Database
+  mariadb:
+    image: mariadb:11
+    container_name: mariadb_${APP_NAME:-wordpress}
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress}
+      MYSQL_USER: ${MYSQL_USER:-wpuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wppassword}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wp-network
+
+  # WordPress
+  wordpress:
+    image: wordpress:php8.2-apache
+    container_name: web_${APP_NAME:-wordpress}
+    restart: always
+    depends_on:
+      - mariadb
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_USER: ${MYSQL_USER:-wpuser}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:-wppassword}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE:-wordpress}
+    ports:
+      - "${PORT:-80}:80"
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - wp-network
+
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_${APP_NAME:-wordpress}
+    restart: always
+    depends_on:
+      - mariadb
+    environment:
+      PMA_HOST: mariadb
+      PMA_USER: ${MYSQL_USER:-wpuser}
+      PMA_PASSWORD: ${MYSQL_PASSWORD:-wppassword}
+    ports:
+      - "${PHPMYADMIN_PORT:-8081}:80"
+    networks:
+      - wp-network
+
+# Volume untuk menyimpan data
+volumes:
+  db_data:
+  wordpress_data:
+
+# Jaringan internal
+networks:
+  wp-network:
