@@ -43,9 +43,7 @@ services:
       - mariadb
     environment:
       PMA_HOST: mariadb
-      PMA_USER: ${MYSQL_USER:-wpuser}
-      PMA_PASSWORD: ${MYSQL_PASSWORD:-wppassword}
-      UPLOAD_LIMIT: 500M
+      UPLOAD_LIMIT: ${UPLOAD_LIMIT:-100M}
     ports:
       - "${PHPMYADMIN_PORT:-8081}:80"
     networks:
