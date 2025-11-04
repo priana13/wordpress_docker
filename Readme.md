@@ -5,7 +5,7 @@
 
 # run
 
-docker compose up -d
+`docker compose up -d`
 
 
 # Migrasi dari Cpanel / Hpanel
@@ -15,21 +15,31 @@ docker compose up -d
  Restore manual file dan database ke container docker
 
 
+ jika menggunakan zero trust tunnel tambahkan pada wp-config.php sebelum text 
+ /* That's all, stop editing! Happy publishing. */
+
+
+`if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $_SERVER['HTTPS'] = 'on';
+}`
+
+
+
 # Migrasi dari server lain
 
 1. Jalankan perintah berikut di server lama:
 
 # Backup WordPress files
-docker run --rm \
+`docker run --rm \
   -v wordpress_data:/data \
   -v $(pwd):/backup \
-  alpine tar czf /backup/wordpress_data.tar.gz -C /data .
+  alpine tar czf /backup/wordpress_data.tar.gz -C /data .`
 
 # Backup Database
-docker run --rm \
+`docker run --rm \
   -v db_data:/data \
   -v $(pwd):/backup \
-  alpine tar czf /backup/db_data.tar.gz -C /data .
+  alpine tar czf /backup/db_data.tar.gz -C /data .`
 
 
 2. Setelah selesai, kamu akan punya dua file di direktori kerja:
@@ -50,7 +60,7 @@ Simpan file .sql hasil ekspor.
 
 Copy file backup ke server baru:
 
-scp wordpress_data.tar.gz db_data.tar.gz user@serverbaru:/home/user/
+`scp wordpress_data.tar.gz db_data.tar.gz user@serverbaru:/home/user/``
 
 Jalankan container di server baru (gunakan docker-compose.yml yang sama).
 
@@ -62,19 +72,19 @@ docker compose down
 Restore data:
 
 # Restore WordPress files
-docker run --rm \
+`docker run --rm \
   -v wordpress_data:/data \
   -v $(pwd):/backup \
-  alpine sh -c "cd /data && tar xzf /backup/wordpress_data.tar.gz"
+  alpine sh -c "cd /data && tar xzf /backup/wordpress_data.tar.gz"`
 
 # Restore Database
-docker run --rm \
+`docker run --rm \
   -v db_data:/data \
   -v $(pwd):/backup \
-  alpine sh -c "cd /data && tar xzf /backup/db_data.tar.gz"
+  alpine sh -c "cd /data && tar xzf /backup/db_data.tar.gz"`
 
 
 Jalankan kembali:
 
-docker compose up -d
+`docker compose up -d`
 
