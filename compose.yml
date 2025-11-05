@@ -18,6 +18,8 @@ services:
     #   interval: 10s
     #   timeout: 5s
     #   retries: 3
+    mem_limit: ${MEM_LIMIT:-512m}
+    cpus: ${CPUS:-0.5}
 
   wordpress:
     image: wordpress:php8.2-apache
@@ -35,6 +37,8 @@ services:
       - wordpress_data:/var/www/html
     networks:
       - wp-network
+    mem_limit: ${MEM_LIMIT:-512m}
+    cpus: ${CPUS:-0.5}
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:5.2.1
@@ -50,6 +54,8 @@ services:
       - "${PHPMYADMIN_PORT:-8081}:80"
     networks:
       - wp-network
+    mem_limit: ${MEM_LIMIT:-512m}
+    cpus: ${CPUS:-0.5}
 
 volumes:
   db_data:
